@@ -5,11 +5,19 @@ ServerModule.prototype = {
     Accessible = true,
 }
 
+ServerModule.values = {
+    Remotes = {}
+}
+
 local util = require(script.Parent.Parent.Util.Misc)
 local remotes = require(script.Parent.Parent.Util.Remotes)
 
 function ServerModule.new(data)
     data = util:Default(data, ServerModule.prototype)
+    for i,v in pairs(ServerModule.values) do 
+        data[i] = v
+    end
+
     setmetatable(data, ServerModule)
 
     return data
@@ -31,6 +39,10 @@ function ServerModule:NewRemote(path)
         warn("⚠ | Failed to create remote: " .. path)
         return nil
     end
+end
+
+function ServerModule:Initialize()
+    warn("⚠ | ServerModule:Initialize() is not implemented for module " .. self.Name)
 end
 
 return ServerModule
