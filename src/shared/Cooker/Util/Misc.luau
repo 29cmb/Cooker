@@ -1,3 +1,4 @@
+--!strict
 local Util = {}
 
 function Util:Default(data, prototype) : any

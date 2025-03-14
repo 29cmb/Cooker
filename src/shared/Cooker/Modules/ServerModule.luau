@@ -11,9 +11,17 @@ ServerModule.values = {
 
 local util = require(script.Parent.Parent.Util.Misc)
 local remotes = require(script.Parent.Parent.Util.Remotes)
+local registry = require(script.Parent.Parent.Registry)
+local Types = require(script.Parent.Parent.Types)
+local runService = game:GetService("RunService")
 
-function ServerModule.new(data)
-    data = util:Default(data, ServerModule.prototype)
+function ServerModule.new(data: any)
+    if runService:IsClient() then 
+        warn("⚠ | Attempted to create a server module on the client")
+        return nil
+    end
+
+    data = util:Default(data, ServerModule.prototype) :: Types.ServerModuleData
     for i,v in pairs(ServerModule.values) do 
         data[i] = v
     end
@@ -34,6 +42,7 @@ function ServerModule:NewRemote(path)
 
     local remote = remotes:NewRemote(path)
     if remote then
+        self.Remotes[remote.Name] = remote
         return remote
     else
         warn("⚠ | Failed to create remote: " .. path)
@@ -41,8 +50,12 @@ function ServerModule:NewRemote(path)
     end
 end
 
+function ServerModule:GetModuleRemotes(name) : Types.RemoteReturn?
+    return registry:GetServerRemotes(name)
+end
+
 function ServerModule:Initialize()
     warn("⚠ | ServerModule:Initialize() is not implemented for module " .. self.Name)
 end
 
-return ServerModule
+return ServerModule :: Types.ServerModule

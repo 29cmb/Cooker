@@ -1,4 +1,9 @@
+--!strict
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Types = require(ReplicatedStorage.Cooker.Types)
 local Cooker = require(game.ReplicatedStorage.Cooker)
+Cooker:Initialize()
+
 local Framework = script.Framework
 local Modules = Framework.Modules
 
@@ -17,16 +22,17 @@ end
 local gameStartTime = time()
 for _, module in pairs(Modules:GetChildren()) do
 	if not module:IsA("ModuleScript") then continue end
-    
+    module = require(module) :: Types.ServerModule
+
     task.spawn(function()
         xpcall(function()
             local startTime = time()	
-            Cooker.Registry:RegisterServerModule(require(module))
+            Cooker.Registry:RegisterServerModule(module)
 
-            print(`✅ | {module.Data.Name} finished initializing in {math.round((time() - startTime) * 1000)}ms`)
+            print(`✅ | {module.Name} finished initializing in {math.round((time() - startTime) * 1000)}ms`)
             successful += 1
         end, function(err)
-            warn(debug.traceback(`❌ | {module.Data.Name} failed to initialize: {err}`))
+            warn(debug.traceback(`❌ | {module.Name} failed to initialize: {err}`))
             failed += 1
         end)
         
