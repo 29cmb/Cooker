@@ -2,6 +2,9 @@
     Registry
     The registry is used to keep track of all the modules that have been registered.
     It also provides functions to get the modules and their remotes.
+
+    For registering a module, you should loop through a list of modules and register them through a seperate thread.
+    This is because if you're doing everything one after the other, some modules that reference others might never return a valid module, because it hasn't been loaded.
 ]]
 
 local Types = require(script.Parent.Types)
@@ -138,11 +141,13 @@ function Registry:AwaitServerLoad(moduleName: string)
     end)
 
     repeat task.wait() until ServerModules[moduleName] ~= nil or timeout == true
-    if ServerModules[moduleName] ~= nil then 
-        completed = true
-    else
+    if ServerModules[moduleName] == nil then 
         warn("⚠ | Timed out waiting for server module '" .. moduleName .. "' to load")
+        return
     end
+
+    completed = true
+    return ServerModules[moduleName]
 end
 
 function Registry:AwaitClientLoad(moduleName: string)
@@ -160,11 +165,39 @@ function Registry:AwaitClientLoad(moduleName: string)
     end)
 
     repeat task.wait() until ClientModules[moduleName] ~= nil or timeout == true
-    if ClientModules[moduleName] ~= nil then 
-        completed = true
-    else
+    if ClientModules[moduleName] == nil then 
         warn("⚠ | Timed out waiting for client module '" .. moduleName .. "' to load")
+        return
     end
+
+    completed = true
+    return ClientModules[moduleName]
+end
+
+function Registry:AwaitServerLoadAsync(moduleName, callback)
+    if runService:IsClient() then 
+        warn("⚠ | Attempted to await server load on the client")
+        return
+    end
+    
+    task.spawn(function()
+        local module = self:AwaitServerLoad(moduleName)
+        if not module then return end
+        callback(module)
+    end)
+end
+
+function Registry:AwaitClientLoadAsync(moduleName, callback)
+    if not runService:IsClient() then 
+        warn("⚠ | Attempted to await client load on the server")
+        return
+    end
+
+    task.spawn(function()
+        local module = self:AwaitClientLoad(moduleName)
+        if not module then return end
+        callback(module)
+    end)
 end
 
 return Registry :: Types.Registry

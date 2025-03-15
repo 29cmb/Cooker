@@ -42,8 +42,10 @@ export type Registry = {
     GetClientModule: (self: Registry, name: string) -> ReturnedClientModule,
     GetServerRemotes: (self: Registry, moduleName: string) -> RemoteReturn?,
     GetClientRemotes: (self: Registry, moduleName: string) -> RemoteReturn?,
-    AwaitServerLoad: (self: Registry, moduleName: string) -> nil,
-    AwaitClientLoad: (self: Registry, moduleName: string) -> nil,
+    AwaitServerLoad: (self: Registry, moduleName: string) -> ReturnedServerModule?,
+    AwaitClientLoad: (self: Registry, moduleName: string) -> ReturnedClientModule?,
+    AwaitServerLoadAsync: (self: Registry, moduleName: string, callback: (module: ReturnedServerModule?) -> any) -> nil,
+    AwaitClientLoadAsync: (self: Registry, moduleName: string, callback: (module: ReturnedClientModule?) -> any) -> nil
 }
 
 export type RemoteReturn = {

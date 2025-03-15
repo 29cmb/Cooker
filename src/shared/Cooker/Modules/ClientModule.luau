@@ -10,10 +10,9 @@ ClientModule.prototype = {
     Name = "ClientModule",
     Accessible = true,
 }
-
+ClientModule.Registry = require(script.Parent.Parent.Registry)
 
 local util = require(script.Parent.Parent.Util.Misc)
-local registry = require(script.Parent.Parent.Registry)
 local Types = require(script.Parent.Parent.Types)
 local runService = game:GetService("RunService")
 
@@ -30,7 +29,7 @@ function ClientModule.new(data: any)
 end
 
 function ClientModule:GetModuleRemotes(name): Types.RemoteReturn?
-    return registry:GetClientRemotes(name)
+    return self.Registry:GetClientRemotes(name)
 end
 
 function ClientModule:Initialize()

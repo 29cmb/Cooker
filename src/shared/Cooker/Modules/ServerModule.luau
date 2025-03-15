@@ -4,14 +4,14 @@ ServerModule.prototype = {
     Name = "ServerModule",
     Accessible = true,
 }
-
 ServerModule.values = {
     Remotes = {}
 }
 
+ServerModule.Registry = require(script.Parent.Parent.Registry)
+
 local util = require(script.Parent.Parent.Util.Misc)
 local remotes = require(script.Parent.Parent.Util.Remotes)
-local registry = require(script.Parent.Parent.Registry)
 local Types = require(script.Parent.Parent.Types)
 local runService = game:GetService("RunService")
 
@@ -51,7 +51,7 @@ function ServerModule:NewRemote(path)
 end
 
 function ServerModule:GetModuleRemotes(name) : Types.RemoteReturn?
-    return registry:GetServerRemotes(name)
+    return self.Registry:GetServerRemotes(name)
 end
 
 function ServerModule:Initialize()
