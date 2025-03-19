@@ -28,13 +28,18 @@ function Registry:RegisterServerModule(module: Types.ReturnedServerModule)
     end
 
     local startTime = time()
-    module:Initialize()
-
-    if cookerSettings.LOG_REGISTRY_CHANGES then 
-        print("✅ | Registered server module '" .. module.Name .. "' in " .. math.round((time() - startTime) * 1000) .. "ms")
-    end
+    local output
+    xpcall(function()
+        output = module:Initialize()
+        if cookerSettings.LOG_REGISTRY_CHANGES then 
+            print("✅ | Registered server module '" .. module.Name .. "' in " .. math.round((time() - startTime) * 1000) .. "ms")
+        end
+    end, function(err)
+        warn(debug.traceback("⚠ | Failed to register server module '" .. module.Name .. "': " .. err))
+    end)
 
     ServerModules[module.Name] = module
+    return output
 end
 
 function Registry:RegisterClientModule(module: Types.ReturnedClientModule)
@@ -49,13 +54,18 @@ function Registry:RegisterClientModule(module: Types.ReturnedClientModule)
     end
 
     local startTime = time()
-    module:Initialize()
-
-    if cookerSettings.LOG_REGISTRY_CHANGES then 
-        print("✅ | Registered client module '" .. module.Name .. "' in " .. math.round((time() - startTime) * 1000) .. "ms")
-    end
+    local output
+    xpcall(function()
+        output = module:Initialize()
+        if cookerSettings.LOG_REGISTRY_CHANGES then 
+            print("✅ | Registered client module '" .. module.Name .. "' in " .. math.round((time() - startTime) * 1000) .. "ms")
+        end
+    end, function(err)
+        warn(debug.traceback("⚠ | Failed to register server module '" .. module.Name .. "': " .. err))
+    end)
 
     ClientModules[module.Name] = module
+    return output
 end
 
 function Registry:GetServerModule(name: string): Types.ReturnedServerModule?

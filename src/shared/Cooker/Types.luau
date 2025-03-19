@@ -19,7 +19,8 @@ export type ServerModule = {
     new: (any) -> ReturnedServerModule,
     Initialize: (self: ServerModule) -> any?,
     NewRemote: (self: ServerModule, path: string) -> BaseRemoteEvent,
-    GetModuleRemotes: (self: ServerModule, name: string) -> RemoteReturn?
+    GetModuleRemotes: (self: ServerModule, name: string) -> RemoteReturn?,
+    Registry: Registry,
 }
 
 export type ReturnedClientModule = ClientModule & ClientModuleData

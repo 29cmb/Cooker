@@ -32,7 +32,7 @@ function ServerModule.new(data: any)
 end
 
 function ServerModule:NewRemote(path)
-    local pattern = "^(%w+%.?)*%w+%[%w+%]$"
+    local pattern = "^%w+[%.%w]*%[%w+%]$"
     local valid = path:match(pattern) ~= nil
 
     if not valid then 
