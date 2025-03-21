@@ -37,8 +37,8 @@ export type ClientModule = {
 }
 
 export type Registry = {
-    RegisterServerModule: (self: Registry, module: ReturnedServerModule) -> nil,
-    RegisterClientModule: (self: Registry, module: any) -> nil,
+    RegisterServerModule: (self: Registry, module: ReturnedServerModule) -> any,
+    RegisterClientModule: (self: Registry, module: any) -> any,
     GetServerModule: (self: Registry, name: string) -> ReturnedServerModule,
     GetClientModule: (self: Registry, name: string) -> ReturnedClientModule,
     GetServerRemotes: (self: Registry, moduleName: string) -> RemoteReturn?,

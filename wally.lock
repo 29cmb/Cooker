@@ -3,6 +3,6 @@
 registry = "test"
 
 [[package]]
-name = "devcm/cooker"
-version = "0.1.0"
+name = "devcmb/cooker"
+version = "1.0.0"
 dependencies = []
