@@ -7,7 +7,8 @@ local Module = Cooker.ServerModule.new({
 
 function Module:Initialize()
     print("Hello, world!")
-    return nil
+    
+    return true
 end
 
 return Module
