@@ -33,8 +33,24 @@ export type ClientModuleData = {
 export type ClientModule = {
     new: (any) -> ReturnedClientModule,
     Initialize: (self: ClientModule) -> any,
-    GetModuleRemotes: (self: ClientModule, name: string) -> RemoteReturn?
+    GetModuleRemotes: (self: ClientModule, name: string) -> RemoteReturn?,
+    Registry: Registry
 }
+
+export type Service = {
+    new: (any) -> any,
+    InitializeServer: (self: Service) -> any,
+    InitializeClient: (self: Service) -> any,
+    Registry: Registry
+}
+
+export type ServiceData = {
+    Name: string,
+    ServerAccessible: boolean,
+    ClientAccessible: boolean
+}
+
+export type ReturnedService = Service & ServiceData
 
 export type Registry = {
     RegisterServerModule: (self: Registry, module: ReturnedServerModule) -> any,
@@ -46,7 +62,10 @@ export type Registry = {
     AwaitServerLoad: (self: Registry, moduleName: string) -> ReturnedServerModule?,
     AwaitClientLoad: (self: Registry, moduleName: string) -> ReturnedClientModule?,
     AwaitServerLoadAsync: (self: Registry, moduleName: string, callback: (module: ReturnedServerModule?) -> any) -> nil,
-    AwaitClientLoadAsync: (self: Registry, moduleName: string, callback: (module: ReturnedClientModule?) -> any) -> nil
+    AwaitClientLoadAsync: (self: Registry, moduleName: string, callback: (module: ReturnedClientModule?) -> any) -> nil,
+    RegisterServiceServer: (self: Registry, service: ReturnedService) -> any,
+    RegisterServiceClient: (self: Registry, service: ReturnedService) -> any,
+    GetService: (self: Registry, name: string) -> ReturnedService,
 }
 
 export type RemoteReturn = {

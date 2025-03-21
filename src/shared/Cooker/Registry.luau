@@ -11,6 +11,7 @@ local Types = require(script.Parent.Types)
 local Registry = {}
 local ServerModules: {[string]: Types.ReturnedServerModule} = {}
 local ClientModules: {[string]: Types.ReturnedClientModule} = {}
+local Services = {}
 
 local runService = game:GetService("RunService")
 local cookerSettings = require(script.Parent.Settings)
@@ -208,6 +209,88 @@ function Registry:AwaitClientLoadAsync(moduleName, callback)
         if not module then return end
         callback(module)
     end)
+end
+
+function Registry:RegisterServiceServer(service)
+    if runService:IsClient() then 
+        warn("⚠ | Attempted to call a service server initialize on the client")
+        return
+    end
+
+    if not service.Name then
+        warn("⚠ | Attempted to register a service without a name")
+        return
+    end
+
+    local startTime = time()
+    local output
+    xpcall(function()
+        output = service:ServerInitialize()
+        if cookerSettings.LOG_REGISTRY_CHANGES then 
+            print("✅ | Registered service (server) '" .. service.Name .. "' in " .. math.round((time() - startTime) * 1000) .. "ms")
+        end
+    end, function(err)
+        warn(debug.traceback("⚠ | Failed to register service '" .. service.Name .. "': " .. err))
+    end)
+
+    Services[service.Name] = service
+    return output
+end
+
+function Registry:RegisterServiceClient(service)
+    if not runService:IsClient() then 
+        warn("⚠ | Attempted to call a service client initialize on the server")
+        return
+    end
+
+    if not service.Name then
+        warn("⚠ | Attempted to register a service without a name")
+        return
+    end
+
+    local startTime = time()
+    local output
+    xpcall(function()
+        output = service:ClientInitialize()
+        if cookerSettings.LOG_REGISTRY_CHANGES then 
+            print("✅ | Registered service (client) '" .. service.Name .. "' in " .. math.round((time() - startTime) * 1000) .. "ms")
+        end
+    end, function(err)
+        warn(debug.traceback("⚠ | Failed to register service '" .. service.Name .. "': " .. err))
+    end)
+
+    Services[service.Name] = service
+    return output
+end
+
+function Registry:GetService(name)
+    local client = runService:IsClient()
+
+    if client then
+        if Services[name] == nil then 
+            warn("⚠ | Attempted to get a service that does not exist: " .. name)
+            return nil
+        end
+
+        if Services[name].ClientAccessible == false then 
+            warn("⚠ | Attempted to get a service that is not accessible by the client. " .. name)
+            return nil
+        end
+
+        return Services[name]
+    else
+        if Services[name] == nil then 
+            warn("⚠ | Attempted to get a service that does not exist: " .. name)
+            return nil
+        end
+
+        if Services[name].ServerAccessible == false then 
+            warn("⚠ | Attempted to get a service that is not accessible by the server. " .. name)
+            return nil
+        end
+
+        return Services[name]
+    end
 end
 
 return Registry :: Types.Registry

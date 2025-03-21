@@ -19,7 +19,6 @@ for _, category in pairs(Modules:GetChildren()) do
 	end
 end
 
-
 local gameStartTime = time()
 for _, category in pairs(Modules:GetChildren()) do
 	if not category:IsA("Folder") then continue end

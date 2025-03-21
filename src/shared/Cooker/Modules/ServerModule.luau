@@ -7,7 +7,6 @@ ServerModule.prototype = {
 ServerModule.values = {
     Remotes = {}
 }
-
 ServerModule.Registry = require(script.Parent.Parent.Registry)
 
 local util = require(script.Parent.Parent.Util.Misc)
