@@ -1,0 +1,32 @@
+name: Rojo project build
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup commands
+        run: |
+          curl -L -o rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.4.4/rojo-7.4.4-linux-x86_64.zip
+          unzip rojo.zip
+          chmod +x rojo
+
+      - name: Build place file
+        run: |
+          ./rojo build default.project.json -o out.rbxl
+
+      - name: Upload place file
+        uses: actions/upload-artifact@v4
+        with:
+            name: Place File
+            path: out.rbxl
