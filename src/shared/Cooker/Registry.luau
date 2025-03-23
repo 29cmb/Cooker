@@ -157,6 +157,11 @@ function Registry:AwaitServerLoad(moduleName: string)
         return
     end
 
+    if ServerModules[moduleName].Accessible == false then 
+        warn("⚠ | Attempted to await server module '" .. moduleName .. "' that is not accessible")
+        return nil
+    end
+
     completed = true
     return ServerModules[moduleName]
 end
@@ -179,6 +184,11 @@ function Registry:AwaitClientLoad(moduleName: string)
     if ClientModules[moduleName] == nil then 
         warn("⚠ | Timed out waiting for client module '" .. moduleName .. "' to load")
         return
+    end
+
+    if ClientModules[moduleName].Accessible == false then 
+        warn("⚠ | Attempted to await client module '" .. moduleName .. "' that is not accessible")
+        return nil
     end
 
     completed = true
