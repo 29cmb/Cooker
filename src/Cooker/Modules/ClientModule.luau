@@ -28,10 +28,6 @@ function ClientModule.new(data: any)
     return data
 end
 
-function ClientModule:GetModuleRemotes(name): Types.RemoteReturn?
-    return self.Registry:GetClientRemotes(name)
-end
-
 function ClientModule:Initialize()
     warn("⚠ | ClientModule:Initialize() is not implemented for module " .. self.Name)
 end

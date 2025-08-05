@@ -4,8 +4,9 @@ local Remotes = {}
 function Remotes:NewRemote(creationString)
     local remotes = game.ReplicatedStorage:FindFirstChild("Remotes")
     if not remotes then 
-        remotes = Instance.new("Folder", game.ReplicatedStorage)
+        remotes = Instance.new("Folder")
         remotes.Name = "Remotes"
+        remotes.Parent = game.ReplicatedStorage
     end
 
     local finalRemote = nil
@@ -20,10 +21,12 @@ function Remotes:NewRemote(creationString)
             local existing = parent:FindFirstChild(name)
             if not existing then
                 if i == #structure then
-                    existing = Instance.new(remoteType, parent)
+                    existing = Instance.new(remoteType)
+                    existing.Parent = parent
                     finalRemote = existing
                 else
-                    existing = Instance.new("Folder", parent)
+                    existing = Instance.new("Folder")
+                    existing.Parent = parent
                 end
                 existing.Name = name
             end
@@ -31,8 +34,10 @@ function Remotes:NewRemote(creationString)
         end
     else
         local remoteType = string.match(creationString, "%[(.-)%]") or "RemoteEvent"
-        local remote = Instance.new(remoteType, remotes)
+        local remote = Instance.new(remoteType)
         remote.Name = string.gsub(creationString, "%[.-%]", "")
+        remote.Parent = remotes
+
         finalRemote = remote
     end
 

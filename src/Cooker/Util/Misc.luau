@@ -28,10 +28,7 @@ function Util:Default(data, prototype) : any
 		end
 	end
 
-	for index, value in pairs(data) do
-		newTable[index] = value
-	end
-
+	newTable = table.clone(data)
 	return newTable
 end
 

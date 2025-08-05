@@ -4,17 +4,13 @@
     "$className": "DataModel",
 
     "ReplicatedStorage": {
-      "$path": "src/shared"
+      "Cooker": {
+        "$path" : "src/Cooker"
+      }
     },
 
     "ServerScriptService": {
       "$path": "src/server"
-    },
-
-    "StarterPlayer": {
-      "StarterPlayerScripts": {
-        "$path": "src/client"
-      }
     }
   }
 }
