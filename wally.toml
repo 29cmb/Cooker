@@ -1,7 +1,10 @@
 [package]
 name = "29cmb/cooker"
+authors = ["DevCmb <devcmb@outlook.com>"]
+description = "A simple yet effective framework creation tool"
 version = "1.0.0"
 registry = "https://github.com/UpliftGames/wally-index"
+repository = "https://github.com/29cmb/Cooker"
 realm = "shared"
 
 [dependencies]

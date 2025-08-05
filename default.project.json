@@ -7,10 +7,6 @@
       "Cooker": {
         "$path" : "src/Cooker"
       }
-    },
-
-    "ServerScriptService": {
-      "$path": "src/server"
     }
   }
 }
