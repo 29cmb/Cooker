@@ -1,12 +1,6 @@
 {
   "name": "Cooker",
   "tree": {
-    "$className": "DataModel",
-
-    "ReplicatedStorage": {
-      "Cooker": {
-        "$path" : "src/Cooker"
-      }
-    }
+    "$path": "src"
   }
 }
