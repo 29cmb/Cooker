@@ -25,9 +25,9 @@ function Remotes:NewRemote(creationString, scope: any?, callback: ((scope: any, 
             remote.OnServerInvoke = function(...) 
                 if callback then
                     if scope then
-                        callback(scope, ...)
+                        return callback(scope, ...)
                     else
-                        callback(...)
+                        return callback(...)
                     end
                 end
             end
@@ -56,9 +56,9 @@ function Remotes:NewRemote(creationString, scope: any?, callback: ((scope: any, 
             remote.OnInvoke = function(...)
                 if callback then
                     if scope then
-                        callback(scope, ...)
+                        return callback(scope, ...)
                     else
-                        callback(...)
+                        return callback(...)
                     end
                 end
             end
