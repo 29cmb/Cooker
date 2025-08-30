@@ -25,7 +25,7 @@ function ServerModule.new(data: any)
     return data
 end
 
-function ServerModule:NewRemote(path)
+function ServerModule:NewRemote(path, scope, callback)
     local pattern = "^%w+[%.%w]*%[%w+%]$"
     local valid = path:match(pattern) ~= nil
 
@@ -34,7 +34,7 @@ function ServerModule:NewRemote(path)
         return nil
     end
 
-    local remote, connection = remotes:NewRemote(path)
+    local remote, connection = remotes:NewRemote(path, scope, callback)
     if remote then
         self.Remotes[remote.Name] = remote
         return remote, connection

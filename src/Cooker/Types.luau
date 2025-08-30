@@ -18,7 +18,7 @@ export type ServerModuleData = {
 export type ServerModule = {
     new: (any) -> ReturnedServerModule,
     Initialize: (self: ServerModule) -> any?,
-    NewRemote: (self: ServerModule, path: string) -> BaseRemoteEvent,
+    NewRemote: (self: ServerModule, path: string, scope: any?, callback: ((scope: any, ...any) -> any)?) -> (BaseRemoteEvent, RBXScriptConnection | {Disconnect: () -> nil}),
     GetModuleRemotes: (self: ServerModule, name: string) -> RemoteReturn?,
     Registry: Registry,
 }
