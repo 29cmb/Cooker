@@ -68,8 +68,10 @@ export type Registry = {
     GetService: (self: Registry, name: string) -> ReturnedService,
 }
 
+export type AllRemotes = RemoteEvent | RemoteFunction | BindableEvent | BindableFunction | UnreliableRemoteEvent
+
 export type RemoteReturn = {
-    [string]: RemoteEvent | RemoteFunction | BindableEvent | BindableFunction
+    [string]: AllRemotes
 }
 
 return {}

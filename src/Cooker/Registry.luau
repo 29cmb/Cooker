@@ -11,7 +11,7 @@ local Types = require(script.Parent.Types)
 local Registry = {}
 local ServerModules: {[string]: Types.ReturnedServerModule} = {}
 local ClientModules: {[string]: Types.ReturnedClientModule} = {}
-local Services = {}
+local Services: {[string]: Types.ReturnedService} = {}
 
 local runService = game:GetService("RunService")
 local cookerSettings = require(script.Parent.Settings)
@@ -237,10 +237,10 @@ function Registry:RegisterServiceServer(service)
     xpcall(function()
         output = service:ServerInitialize()
         if cookerSettings.LOG_REGISTRY_CHANGES then 
-            print("✅ | Registered service (server) '" .. service.Name .. "' in " .. math.round((time() - startTime) * 1000) .. "ms")
+            print(`✅ | Registered service (server) '{service.Name}' in {math.round((time() - startTime) * 1000)}ms`)
         end
     end, function(err)
-        warn(debug.traceback("⚠ | Failed to register service '" .. service.Name .. "': " .. err))
+        warn(debug.traceback(`⚠ | Failed to register service '{service.Name}': {err}`))
     end)
 
     Services[service.Name] = service
@@ -263,17 +263,17 @@ function Registry:RegisterServiceClient(service)
     xpcall(function()
         output = service:ClientInitialize()
         if cookerSettings.LOG_REGISTRY_CHANGES then 
-            print("✅ | Registered service (client) '" .. service.Name .. "' in " .. math.round((time() - startTime) * 1000) .. "ms")
+            print(`✅ | Registered service (client) '{service.Name}' in {math.round((time() - startTime) * 1000)}ms`)
         end
     end, function(err)
-        warn(debug.traceback("⚠ | Failed to register service '" .. service.Name .. "': " .. err))
+        warn(debug.traceback(`⚠ | Failed to register service '{service.Name}': {err}`))
     end)
 
     Services[service.Name] = service
     return output
 end
 
-function Registry:GetService(name)
+function Registry:GetService(name): Types.ReturnedService?
     local client = runService:IsClient()
 
     if client then
@@ -283,11 +283,11 @@ function Registry:GetService(name)
         end
 
         if Services[name].ClientAccessible == false then 
-            warn("⚠ | Attempted to get a service that is not accessible by the client. " .. name)
+            warn("⚠ | Attempted to get a service that is not accessible by the client: " .. name)
             return nil
         end
 
-        return Services[name]
+        return Services[name] :: Types.ReturnedService
     else
         if Services[name] == nil then 
             warn("⚠ | Attempted to get a service that does not exist: " .. name)
@@ -295,7 +295,7 @@ function Registry:GetService(name)
         end
 
         if Services[name].ServerAccessible == false then 
-            warn("⚠ | Attempted to get a service that is not accessible by the server. " .. name)
+            warn("⚠ | Attempted to get a service that is not accessible by the server: " .. name)
             return nil
         end
 

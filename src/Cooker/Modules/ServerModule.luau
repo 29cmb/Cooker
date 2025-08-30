@@ -3,8 +3,6 @@ ServerModule.__index = ServerModule
 ServerModule.prototype = {
     Name = "ServerModule",
     Accessible = true,
-}
-ServerModule.values = {
     Remotes = {}
 }
 ServerModule.Registry = require(script.Parent.Parent.Registry)
@@ -21,9 +19,6 @@ function ServerModule.new(data: any)
     end
 
     data = util:Default(data, ServerModule.prototype) :: Types.ServerModuleData
-    for i,v in pairs(ServerModule.values) do 
-        data[i] = v
-    end
 
     setmetatable(data, ServerModule)
 
@@ -39,10 +34,10 @@ function ServerModule:NewRemote(path)
         return nil
     end
 
-    local remote = remotes:NewRemote(path)
+    local remote, connection = remotes:NewRemote(path)
     if remote then
         self.Remotes[remote.Name] = remote
-        return remote
+        return remote, connection
     else
         warn("⚠ | Failed to create remote: " .. path)
         return nil

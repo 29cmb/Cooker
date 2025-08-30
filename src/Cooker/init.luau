@@ -11,7 +11,7 @@
     Made by DevCmb (@29ce)
 
     Created: 3/14/25
-    Last updated: 3/21/25
+    Last updated: 8/30/25
 
     https://github.com/29cmb/Cooker
 ]]
