@@ -195,21 +195,22 @@ function Remotes:AwaitRemote(path: string): Types.AllRemotes?
 			parent = parent:FindFirstChild(name)
 			if not parent then break end
 		end
-
-		if remoteType and parent.ClassName ~= remoteType then
-			warn(
-				"⚠️ | Expected type '"
-					.. remoteType
-					.. "' but found '"
-					.. parent.ClassName
-					.. "' for '"
-					.. path
-					.. "'"
-			)
-			return nil
-		end
-
+		
         if parent then
+			if remoteType and parent.ClassName ~= remoteType then
+				warn(
+					"⚠️ | Expected type '"
+						.. remoteType
+						.. "' but found '"
+						.. parent.ClassName
+						.. "' for '"
+						.. path
+						.. "'"
+				)
+				
+				return nil
+			end
+
             found = parent
         end
 
