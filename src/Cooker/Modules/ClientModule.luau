@@ -7,8 +7,8 @@
 local ClientModule = {}
 ClientModule.__index = ClientModule
 ClientModule.prototype = {
-    Name = "ClientModule",
-    Accessible = true,
+	Name = "ClientModule",
+	Accessible = true,
 }
 ClientModule.Registry = require(script.Parent.Parent.Registry)
 
@@ -17,19 +17,19 @@ local Types = require(script.Parent.Parent.Types)
 local runService = game:GetService("RunService")
 
 function ClientModule.new(data: any)
-    if not runService:IsClient() then 
-        warn("⚠ | Attempted to create a client module on the server")
-        return nil
-    end
-    
-    data = util:Default(data, ClientModule.prototype) :: Types.ClientModuleData
-    setmetatable(data, ClientModule)
+	if not runService:IsClient() then
+		warn("⚠ | Attempted to create a client module on the server")
+		return nil
+	end
 
-    return data
+	data = util:Default(data, ClientModule.prototype) :: Types.ClientModuleData
+	setmetatable(data, ClientModule)
+
+	return data
 end
 
 function ClientModule:Initialize()
-    warn("⚠ | ClientModule:Initialize() is not implemented for module " .. self.Name)
+	warn("⚠ | ClientModule:Initialize() is not implemented for module " .. self.Name)
 end
 
 return ClientModule :: Types.ClientModule
