@@ -134,4 +134,31 @@ function Remotes:NewRemote(creationString, scope: any?, callback: ((scope: any, 
     return finalRemote
 end
 
+function Remotes:GetRemote(path: string): Types.AllRemotes?
+	local remotes = game.ReplicatedStorage:FindFirstChild("Remotes")
+	if not remotes then
+		warn("⚠️ | Remotes folder not found in ReplicatedStorage")
+		return nil
+	end
+
+	local pathParts = string.split(path, ".")
+	local remoteType = string.match(pathParts[#pathParts], "%[(.-)%]")
+	pathParts[#pathParts] = string.gsub(pathParts[#pathParts], "%[.-%]", "")
+
+	local parent = remotes
+	for _, name in ipairs(pathParts) do
+		parent = parent:FindFirstChild(name)
+		if not parent then
+			warn("⚠️ | Remote path not found: " .. path)
+			return nil
+		end
+	end
+
+	if remoteType and parent.ClassName ~= remoteType then
+		warn("⚠️ | Expected type '" .. remoteType .. "' but found '" .. parent.ClassName .. "' for '" .. path .. "'")
+		return nil
+	end
+
+	return parent :: Types.AllRemotes
+end
 return Remotes
