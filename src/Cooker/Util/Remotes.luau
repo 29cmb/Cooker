@@ -111,6 +111,11 @@ function Remotes:NewRemote(
 		local parent = remotes
 		for i, name in ipairs(structure) do
 			local existing = parent:FindFirstChild(name)
+
+			if existing and i == #structure then
+				error("❌ | There is already a remote named "..name.." in this folder! Please use a different name.")
+			end
+			
 			if not existing then
 				if i == #structure then
 					existing = Instance.new(remoteType)
