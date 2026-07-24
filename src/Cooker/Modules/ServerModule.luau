@@ -1,58 +1,46 @@
-local ServerModule = {}
-ServerModule.__index = ServerModule
-ServerModule.prototype = {
+--!strict
+--[[
+	The base class for all server modules.
+]]
+local ServerModule = {
 	Name = "ServerModule",
 	Accessible = true,
 	Remotes = {},
 }
+ServerModule.__index = ServerModule
 ServerModule.Registry = require(script.Parent.Parent.Registry)
 
-local util = require(script.Parent.Parent.Util.Misc)
 local remotes = require(script.Parent.Parent.Util.Remotes)
 local Types = require(script.Parent.Parent.Types)
 local runService = game:GetService("RunService")
 
-function ServerModule.new(data: any)
+function ServerModule.new(data: Types.ServerModuleData)
 	if runService:IsClient() then
-		warn("⚠ | Attempted to create a server module on the client")
-		return nil
+		error("❌ | Attempted to create a server module on the client")
 	end
 
-	data = util:Default(data, ServerModule.prototype) :: Types.ServerModuleData
-
-	setmetatable(data, ServerModule)
-
+	data = setmetatable(data, ServerModule)
 	return data
 end
 
-function ServerModule:NewRemote(path, scope, callback)
+function ServerModule.NewRemote(self: Types.ServerModule, path: string, scope: any?, callback: ((scope: any, ...any) -> any)?)
 	local pattern = "^%w+[%.%w]*%[%w+%]$"
 	local valid = path:match(pattern) ~= nil
 
-	if not valid then
-		warn(
-			"⚠ | Invalid remote path: "
-				.. path
-				.. ". Please read the documentation for how remotes should be formatted."
-		)
-		return nil
-	end
+	if not valid then error(`❌ | Invalid remote path: {path}; Please read the documentation for how remotes should be formatted.`) end
 
 	local remote, connection = remotes:NewRemote(path, scope, callback)
-	if remote then
-		self.Remotes[remote.Name] = remote
-		return remote, connection
-	else
-		warn("⚠ | Failed to create remote: " .. path)
-		return nil
-	end
+	if not remote then error("❌ | Failed to create remote: " .. path) end
+
+	self.Remotes[remote.Name] = remote
+	return remote, connection
 end
 
-function ServerModule:GetModuleRemotes(name): Types.RemoteReturn?
+function ServerModule.GetModuleRemotes(self: Types.ServerModule, name: string)
 	return self.Registry:GetServerRemotes(name)
 end
 
-function ServerModule:Initialize()
+function ServerModule.Initialize(self: Types.ServerModule)
 	warn("⚠ | ServerModule:Initialize() is not implemented for module " .. self.Name)
 end
 

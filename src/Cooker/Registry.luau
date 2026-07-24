@@ -1,3 +1,4 @@
+--!strict
 --[[
     Registry
     The registry is used to keep track of all the modules that have been registered.
@@ -8,16 +9,16 @@
 ]]
 
 local Types = require(script.Parent.Types)
-local Registry = {}
-local ServerModules: { [string]: Types.ReturnedServerModule } = {}
-local ClientModules: { [string]: Types.ReturnedClientModule } = {}
-local Services: { [string]: Types.ReturnedService } = {}
+local Registry = {
+	ServerModules = {},
+	ClientModules = {}
+}
 
 local runService = game:GetService("RunService")
 local cookerSettings = require(script.Parent.Settings)
 local settings = require(script.Parent.Settings)
 
-function Registry:RegisterServerModule(module: Types.ReturnedServerModule)
+function Registry.RegisterServerModule(self: Types.Registry, module: Types.ServerModule): any
 	if runService:IsClient() then
 		warn("⚠ | Attempted to register a server module on the client")
 		return
@@ -45,11 +46,11 @@ function Registry:RegisterServerModule(module: Types.ReturnedServerModule)
 		warn(debug.traceback("⚠ | Failed to register server module '" .. module.Name .. "': " .. err))
 	end)
 
-	ServerModules[module.Name] = module
+	self.ServerModules[module.Name] = module
 	return output
 end
 
-function Registry:RegisterClientModule(module: Types.ReturnedClientModule)
+function Registry.RegisterClientModule(self: Types.Registry, module: Types.ClientModule): any
 	if not runService:IsClient() then
 		warn("⚠ | Attempted to register a client module on the server")
 		return
@@ -77,17 +78,17 @@ function Registry:RegisterClientModule(module: Types.ReturnedClientModule)
 		warn(debug.traceback("⚠ | Failed to register server module '" .. module.Name .. "': " .. err))
 	end)
 
-	ClientModules[module.Name] = module
+	self.ClientModules[module.Name] = module
 	return output
 end
 
-function Registry:GetServerModule(name: string): Types.ReturnedServerModule?
+function Registry.GetServerModule(self: Types.Registry, name: string): Types.ServerModule?
 	if runService:IsClient() then
 		warn("⚠ | Attempted to get a server module on the client")
 		return nil
 	end
 
-	local m = ServerModules[name]
+	local m = self.ServerModules[name]
 	if m == nil then
 		return nil
 	end
@@ -100,13 +101,13 @@ function Registry:GetServerModule(name: string): Types.ReturnedServerModule?
 	return m
 end
 
-function Registry:GetClientModule(name: string): Types.ReturnedClientModule?
+function Registry.GetClientModule(self: Types.Registry, name: string): Types.ClientModule?
 	if not runService:IsClient() then
 		warn("⚠ | Attempted to get a client module on the server")
 		return nil
 	end
 
-	local m = ClientModules[name]
+	local m = self.ClientModules[name]
 	if m == nil then
 		return nil
 	end
@@ -119,7 +120,7 @@ function Registry:GetClientModule(name: string): Types.ReturnedClientModule?
 	return m
 end
 
-function Registry:GetServerRemotes(moduleName: string): Types.RemoteReturn?
+function Registry.GetServerRemotes(self: Types.Registry, moduleName: string): Types.RemoteReturn?
 	if runService:IsClient() then
 		warn("⚠ | Attempted to get server remotes on the client")
 		return nil
@@ -139,18 +140,7 @@ function Registry:GetServerRemotes(moduleName: string): Types.RemoteReturn?
 	return module.Remotes
 end
 
-function Registry:GetClientRemotes(moduleName: string): Types.RemoteReturn?
-	if not runService:IsClient() then
-		warn("⚠ | Attempted to get client remotes on the server")
-		return nil
-	end
-
-	local remote: RemoteFunction =
-		game.ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Cooker"):WaitForChild("GetServerModuleRemotes")
-	return remote:InvokeServer(moduleName)
-end
-
-function Registry:AwaitServerLoad(moduleName: string)
+function Registry.AwaitServerLoad(self: Types.Registry, moduleName: string)
 	if runService:IsClient() then
 		warn("⚠ | Attempted to await server load on the client")
 		return
@@ -160,7 +150,7 @@ function Registry:AwaitServerLoad(moduleName: string)
 	local completed = false
 
 	task.spawn(function()
-		wait(settings.MODULE_AWAIT_TIMEOUT)
+		task.wait(settings.MODULE_AWAIT_TIMEOUT)
 		if not completed then
 			timeout = true
 		end
@@ -168,22 +158,23 @@ function Registry:AwaitServerLoad(moduleName: string)
 
 	repeat
 		task.wait()
-	until ServerModules[moduleName] ~= nil or timeout == true
-	if ServerModules[moduleName] == nil then
+	until self.ServerModules[moduleName] ~= nil or timeout == true
+
+	if self.ServerModules[moduleName] == nil then
 		warn("⚠ | Timed out waiting for server module '" .. moduleName .. "' to load")
 		return
 	end
 
-	if ServerModules[moduleName].Accessible == false then
+	if self.ServerModules[moduleName].Accessible == false then
 		warn("⚠ | Attempted to await server module '" .. moduleName .. "' that is not accessible")
 		return nil
 	end
 
 	completed = true
-	return ServerModules[moduleName]
+	return self.ServerModules[moduleName]
 end
 
-function Registry:AwaitClientLoad(moduleName: string)
+function Registry.AwaitClientLoad(self: Types.Registry, moduleName: string)
 	if not runService:IsClient() then
 		warn("⚠ | Attempted to await client load on the server")
 		return
@@ -193,7 +184,7 @@ function Registry:AwaitClientLoad(moduleName: string)
 	local completed = false
 
 	task.spawn(function()
-		wait(settings.MODULE_AWAIT_TIMEOUT)
+		task.wait(settings.MODULE_AWAIT_TIMEOUT)
 		if not completed then
 			timeout = true
 		end
@@ -201,22 +192,23 @@ function Registry:AwaitClientLoad(moduleName: string)
 
 	repeat
 		task.wait()
-	until ClientModules[moduleName] ~= nil or timeout == true
-	if ClientModules[moduleName] == nil then
+	until self.ClientModules[moduleName] ~= nil or timeout == true
+	
+	if self.ClientModules[moduleName] == nil then
 		warn("⚠ | Timed out waiting for client module '" .. moduleName .. "' to load")
 		return
 	end
 
-	if ClientModules[moduleName].Accessible == false then
+	if self.ClientModules[moduleName].Accessible == false then
 		warn("⚠ | Attempted to await client module '" .. moduleName .. "' that is not accessible")
 		return nil
 	end
 
 	completed = true
-	return ClientModules[moduleName]
+	return self.ClientModules[moduleName]
 end
 
-function Registry:AwaitServerLoadAsync(moduleName, callback)
+function Registry.AwaitServerLoadAsync(self: Types.Registry, moduleName, callback)
 	if runService:IsClient() then
 		warn("⚠ | Attempted to await server load on the client")
 		return
@@ -231,7 +223,7 @@ function Registry:AwaitServerLoadAsync(moduleName, callback)
 	end)
 end
 
-function Registry:AwaitClientLoadAsync(moduleName, callback)
+function Registry.AwaitClientLoadAsync(self: Types.Registry, moduleName, callback)
 	if not runService:IsClient() then
 		warn("⚠ | Attempted to await client load on the server")
 		return
@@ -244,88 +236,6 @@ function Registry:AwaitClientLoadAsync(moduleName, callback)
 		end
 		callback(module)
 	end)
-end
-
-function Registry:RegisterServiceServer(service)
-	if runService:IsClient() then
-		warn("⚠ | Attempted to call a service server initialize on the client")
-		return
-	end
-
-	if not service.Name then
-		warn("⚠ | Attempted to register a service without a name")
-		return
-	end
-
-	local startTime = time()
-	local output
-	xpcall(function()
-		output = service:ServerInitialize()
-		if cookerSettings.LOG_REGISTRY_CHANGES then
-			print(`✅ | Registered service (server) '{service.Name}' in {math.round((time() - startTime) * 1000)}ms`)
-		end
-	end, function(err)
-		warn(debug.traceback(`⚠ | Failed to register service '{service.Name}': {err}`))
-	end)
-
-	Services[service.Name] = service
-	return output
-end
-
-function Registry:RegisterServiceClient(service)
-	if not runService:IsClient() then
-		warn("⚠ | Attempted to call a service client initialize on the server")
-		return
-	end
-
-	if not service.Name then
-		warn("⚠ | Attempted to register a service without a name")
-		return
-	end
-
-	local startTime = time()
-	local output
-	xpcall(function()
-		output = service:ClientInitialize()
-		if cookerSettings.LOG_REGISTRY_CHANGES then
-			print(`✅ | Registered service (client) '{service.Name}' in {math.round((time() - startTime) * 1000)}ms`)
-		end
-	end, function(err)
-		warn(debug.traceback(`⚠ | Failed to register service '{service.Name}': {err}`))
-	end)
-
-	Services[service.Name] = service
-	return output
-end
-
-function Registry:GetService(name): Types.ReturnedService?
-	local client = runService:IsClient()
-
-	if client then
-		if Services[name] == nil then
-			warn("⚠ | Attempted to get a service that does not exist: " .. name)
-			return nil
-		end
-
-		if Services[name].ClientAccessible == false then
-			warn("⚠ | Attempted to get a service that is not accessible by the client: " .. name)
-			return nil
-		end
-
-		return Services[name] :: Types.ReturnedService
-	else
-		if Services[name] == nil then
-			warn("⚠ | Attempted to get a service that does not exist: " .. name)
-			return nil
-		end
-
-		if Services[name].ServerAccessible == false then
-			warn("⚠ | Attempted to get a service that is not accessible by the server: " .. name)
-			return nil
-		end
-
-		return Services[name]
-	end
 end
 
 return Registry :: Types.Registry

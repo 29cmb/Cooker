@@ -8,70 +8,60 @@ export type Settings = {
 	REMOTE_AWAIT_TIMEOUT: number
 }
 
-export type ReturnedServerModule = ServerModule & ServerModuleData
-
 export type ServerModuleData = {
 	Name: string,
 	Accessible: boolean,
 	Remotes: RemoteReturn,
 }
 
-export type ServerModule = {
-	new: (any) -> ReturnedServerModule,
-	Initialize: (self: ServerModule) -> any?,
+export type ServerModule = ServerModuleData & ServerModuleClass
+
+export type ServerModuleClass = {
+	__index: ServerModuleClass,
+	Registry: Registry,
+
+	new: (data: ServerModuleData) -> 
+		typeof(setmetatable({} :: ServerModuleData, {} :: ServerModule)),
+	Initialize: (self: ServerModule) -> any,
+
 	NewRemote: (
 		self: ServerModule,
 		path: string,
 		scope: any?,
 		callback: ((scope: any, ...any) -> any)?
-	) -> (BaseRemoteEvent, RBXScriptConnection | { Disconnect: () -> nil }),
+	) -> (AllRemotes, (RBXScriptConnection | { Disconnect: () -> nil })?),
 	GetModuleRemotes: (self: ServerModule, name: string) -> RemoteReturn?,
-	Registry: Registry,
 }
-
-export type ReturnedClientModule = ClientModule & ClientModuleData
 
 export type ClientModuleData = {
 	Name: string,
 	Accessible: boolean,
 }
 
-export type ClientModule = {
-	new: (any) -> ReturnedClientModule,
+export type ClientModule = ClientModuleData & ClientModuleClass
+
+export type ClientModuleClass = {
+	__index: ClientModuleClass,
+	Registry: Registry,
+	new: (data: ClientModuleData) -> typeof(setmetatable({} :: ClientModuleData, {} :: ClientModule)),
 	Initialize: (self: ClientModule) -> any,
-	GetModuleRemotes: (self: ClientModule, name: string) -> RemoteReturn?,
-	Registry: Registry,
 }
-
-export type Service = {
-	new: (any) -> any,
-	InitializeServer: (self: Service) -> any,
-	InitializeClient: (self: Service) -> any,
-	Registry: Registry,
-}
-
-export type ServiceData = {
-	Name: string,
-	ServerAccessible: boolean,
-	ClientAccessible: boolean,
-}
-
-export type ReturnedService = Service & ServiceData
 
 export type Registry = {
-	RegisterServerModule: (self: Registry, module: ReturnedServerModule) -> any,
-	RegisterClientModule: (self: Registry, module: any) -> any,
-	GetServerModule: (self: Registry, name: string) -> ReturnedServerModule,
-	GetClientModule: (self: Registry, name: string) -> ReturnedClientModule,
+	ServerModules: {[string]: ServerModule},
+	ClientModules: {[string]: ClientModule},
+
+	RegisterServerModule: (self: Registry, module: ServerModule) -> any,
+	RegisterClientModule: (self: Registry, module: ClientModule) -> any,
+	
+	GetServerModule: (self: Registry, name: string) -> ServerModule?,
+	GetClientModule: (self: Registry, name: string) -> ClientModule?,
+
 	GetServerRemotes: (self: Registry, moduleName: string) -> RemoteReturn?,
-	GetClientRemotes: (self: Registry, moduleName: string) -> RemoteReturn?,
-	AwaitServerLoad: (self: Registry, moduleName: string) -> ReturnedServerModule?,
-	AwaitClientLoad: (self: Registry, moduleName: string) -> ReturnedClientModule?,
-	AwaitServerLoadAsync: (self: Registry, moduleName: string, callback: (module: ReturnedServerModule?) -> any) -> nil,
-	AwaitClientLoadAsync: (self: Registry, moduleName: string, callback: (module: ReturnedClientModule?) -> any) -> nil,
-	RegisterServiceServer: (self: Registry, service: ReturnedService) -> any,
-	RegisterServiceClient: (self: Registry, service: ReturnedService) -> any,
-	GetService: (self: Registry, name: string) -> ReturnedService,
+	AwaitServerLoad: (self: Registry, moduleName: string) -> ServerModule?,
+	AwaitClientLoad: (self: Registry, moduleName: string) -> ClientModule?,
+	AwaitServerLoadAsync: (self: Registry, moduleName: string, callback: (module: ServerModule?) -> any) -> nil,
+	AwaitClientLoadAsync: (self: Registry, moduleName: string, callback: (module: ClientModule?) -> any) -> nil,
 }
 
 export type AllRemotes = RemoteEvent | RemoteFunction | BindableEvent | BindableFunction | UnreliableRemoteEvent

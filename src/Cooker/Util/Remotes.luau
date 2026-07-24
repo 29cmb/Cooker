@@ -8,9 +8,9 @@ function Remotes:NewRemote(
 	creationString,
 	scope: any?,
 	callback: ((scope: any, ...any) -> any)?
-): (Types.AllRemotes?, RBXScriptConnection?)
+): (Types.AllRemotes, (RBXScriptConnection | { Disconnect: () -> nil })?)
 	if not RunService:IsServer() then
-		return
+		error("❌ | Attempted to make a new remote on the client")
 	end
 
 	local validTypes = {
@@ -104,8 +104,7 @@ function Remotes:NewRemote(
 		structure[#structure] = string.gsub(structure[#structure], "%[.-%]", "")
 
 		if not validTypes[remoteType] then
-			warn("⚠️ | " .. remoteType .. " is not a valid remote type!")
-			return
+			error("❌ | " .. remoteType .. " is not a valid remote type!")
 		end
 
 		local parent = remotes
