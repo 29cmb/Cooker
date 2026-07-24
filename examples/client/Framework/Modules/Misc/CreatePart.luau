@@ -9,7 +9,7 @@ local module = Cooker.ClientModule.new({
 })
 
 -- Wait for the server to create the remote (timeout in settings, default 10)
-local remote: RemoteEvent = Cooker.Remotes:AwaitRemote("Player.CreatePart[RemoteEvent]")
+local remote = Cooker.Remotes:AwaitRemote("Player.CreatePart[RemoteEvent]") :: RemoteEvent
 
 function module:Initialize()
     -- Detect user input

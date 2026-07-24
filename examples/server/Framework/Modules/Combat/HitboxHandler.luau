@@ -6,11 +6,7 @@ local module = Cooker.ServerModule.new({
     Accessible = true -- Allow this module to be accessed so we can reference it in the WeaponsHandler
 })
 
-function module:Initialize()
-    return true -- This module on its own doesn't have any functionality, so we can simply return true
-end
-
-function module:CreateHitbox(position: Vector3, size: Vector3)
+local function CreateHitbox(position: Vector3, size: Vector3)
     local hitbox = Instance.new("Part")
     hitbox.Position = position
     hitbox.Size = size
@@ -19,6 +15,14 @@ function module:CreateHitbox(position: Vector3, size: Vector3)
     hitbox.Color = Color3.fromRGB(255, 0, 0)
     hitbox.CanCollide = false
     hitbox.Parent = workspace
+end
+
+function module:Initialize()
+    self:RegisterEventListener("create_hitbox", function(position: Vector3, size: Vector3)
+        CreateHitbox(position, size)
+    end)
+
+    return true -- This module on its own doesn't have any functionality, so we can simply return true
 end
 
 return module

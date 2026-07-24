@@ -1,6 +1,6 @@
-local Framework = script.Parent.Framework
+local Framework = script.Framework
 local Modules = Framework.Modules
-local Cooker = require(game.ReplicatedStorage.Cooker)
+local Cooker = require(script.Parent.Cooker)
 
 -- Module loading
 local successful = 0

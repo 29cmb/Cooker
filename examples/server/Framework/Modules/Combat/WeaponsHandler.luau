@@ -10,9 +10,6 @@ local module = Cooker.ServerModule.new({
 local HITBOX_SIZE = Vector3.new(2, 5, 2)
 
 function module:Initialize()
-    -- Get the hitbox handler module from the registry
-    local HitboxHandler = Cooker.Registry:AwaitServerLoad("HitboxHandler") -- Name here must match the Name field, not the script name!
-
     -- It is VERY IMPORTANT that a spawn is used here because otherwise, this module will never finish loading
     -- That means anything that wants to reference this module will not be able to unless the loop breaks
     task.spawn(function()
@@ -27,7 +24,7 @@ function module:Initialize()
                 if not root then continue end
                 
                 -- Use a method from the other module to abstract the code a bit
-                HitboxHandler:CreateHitbox(root.Position, HITBOX_SIZE)
+                self:CallEvent("create_hitbox", root.Position, HITBOX_SIZE)
             end
         end
     end)

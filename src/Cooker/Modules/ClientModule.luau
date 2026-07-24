@@ -1,7 +1,7 @@
 --!strict
 --[[
     The base class for all client modules.
-    Clients cannot create remotes, but they can request remotes from the server modules, the server will then send the remotes back to the client through the method.
+    Clients cannot create remotes.
     Everything else is functionally the same as a server module.
 ]]
 
@@ -14,6 +14,7 @@ ClientModule.Registry = require(script.Parent.Parent.Registry)
 
 local Types = require(script.Parent.Parent.Types)
 local runService = game:GetService("RunService")
+local Environments = require(script.Parent.Parent.Events.Environments)
 
 function ClientModule.new(data: Types.ClientModuleData)
 	if not runService:IsClient() then
@@ -29,4 +30,16 @@ function ClientModule.Initialize(self: Types.ClientModule)
 	warn("⚠ | ClientModule:Initialize() is not implemented for module " .. self.Name)
 end
 
-return ClientModule :: Types.ClientModule
+function ClientModule.RegisterEventListener(self: Types.ClientModule, event: string, onEvent: (...any) -> nil)
+	return Environments.ClientEvents:RegisterListener(event, onEvent, self.Name)
+end
+
+function ClientModule.UnregisterEventListener(_: Types.ClientModule, listener: Types.EventListener)
+	Environments.ClientEvents:UnregisterListener(listener)
+end
+
+function ClientModule.CallEvent(_: Types.ClientModule, event: string, ...: any)
+	Environments.ClientEvents:Call(event, ...)
+end
+
+return ClientModule :: Types.ClientModuleClass

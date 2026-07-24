@@ -1,21 +1,21 @@
 {
     "name": "Cooker",
+    "emitLegacyScripts": false,
+
     "tree": {
         "$className": "DataModel",
         "ReplicatedStorage": {
             "Cooker": {
                 "$path": "src/Cooker"
+            },
+
+            "Client": {
+                "$path": "examples/client"
             }
         },
 
         "ServerScriptService": {
             "$path": "examples/server"
-        },
-
-        "StarterPlayer": {
-            "StarterPlayerScripts": {
-                "$path": "examples/client"
-            }
         }
     }
 }

@@ -11,17 +11,17 @@ export type Settings = {
 export type ServerModuleData = {
 	Name: string,
 	Accessible: boolean,
-	Remotes: RemoteReturn,
 }
 
-export type ServerModule = ServerModuleData & ServerModuleClass
+export type ServerModule = typeof(setmetatable({} :: ServerModuleData, {} :: ServerModuleClass ))
 
 export type ServerModuleClass = {
 	__index: ServerModuleClass,
 	Registry: Registry,
+	Remotes: RemoteReturn,
 
 	new: (data: ServerModuleData) -> 
-		typeof(setmetatable({} :: ServerModuleData, {} :: ServerModule)),
+		ServerModule,
 	Initialize: (self: ServerModule) -> any,
 
 	NewRemote: (
@@ -31,6 +31,10 @@ export type ServerModuleClass = {
 		callback: ((scope: any, ...any) -> any)?
 	) -> (AllRemotes, (RBXScriptConnection | { Disconnect: () -> nil })?),
 	GetModuleRemotes: (self: ServerModule, name: string) -> RemoteReturn?,
+
+	RegisterEventListener: (self: ServerModule, event: string, onEvent: (...any) -> nil) -> EventListener,
+	UnregisterEventListener: (self: ServerModule, listener: EventListener) -> nil,
+	CallEvent: (self: ServerModule, event: string, ...any) -> nil
 }
 
 export type ClientModuleData = {
@@ -38,22 +42,26 @@ export type ClientModuleData = {
 	Accessible: boolean,
 }
 
-export type ClientModule = ClientModuleData & ClientModuleClass
+export type ClientModule = typeof(setmetatable({} :: ClientModuleData, {} :: ClientModuleClass ))
 
 export type ClientModuleClass = {
 	__index: ClientModuleClass,
 	Registry: Registry,
-	new: (data: ClientModuleData) -> typeof(setmetatable({} :: ClientModuleData, {} :: ClientModule)),
+	new: (data: ClientModuleData) -> ClientModule,
 	Initialize: (self: ClientModule) -> any,
+	
+	RegisterEventListener: (self: ClientModule, event: string, onEvent: (...any) -> nil) -> EventListener,
+	UnregisterEventListener: (self: ClientModule, listener: EventListener) -> nil,
+	CallEvent: (self: ClientModule, event: string, ...any) -> nil
 }
 
 export type Registry = {
-	ServerModules: {[string]: ServerModule},
-	ClientModules: {[string]: ClientModule},
+	ServerModules: {[string]: ServerModule?},
+	ClientModules: {[string]: ClientModule?},
 
 	RegisterServerModule: (self: Registry, module: ServerModule) -> any,
 	RegisterClientModule: (self: Registry, module: ClientModule) -> any,
-	
+
 	GetServerModule: (self: Registry, name: string) -> ServerModule?,
 	GetClientModule: (self: Registry, name: string) -> ClientModule?,
 
@@ -68,6 +76,31 @@ export type AllRemotes = RemoteEvent | RemoteFunction | BindableEvent | Bindable
 
 export type RemoteReturn = {
 	[string]: AllRemotes,
+}
+
+export type EventEnvironmentData = {
+	environment: "server" | "client" | "shared",
+	check: () -> boolean
+}
+
+export type EventEnvironment = typeof(setmetatable({} :: EventEnvironmentData, {} :: EventEnvironmentClass))
+
+export type EventEnvironmentClass = {
+	__index: EventEnvironmentClass,
+	handlers: {[string]: {EventListener}},
+
+	new: (data: EventEnvironmentData) -> EventEnvironment,
+	RegisterListener: (self: EventEnvironment, event: string, onEvent: (...any) -> any, source: string) -> EventListener,
+	UnregisterListener: (self: EventEnvironment, listener: EventListener) -> nil,
+	Call: (self: EventEnvironment, event: string, ...any) -> nil
+}
+
+export type EventListener = {
+	id: string,
+	event: string,
+	environment: "server" | "client",
+	onEvent: (...any) -> any,
+	source: string
 }
 
 return {}

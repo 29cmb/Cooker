@@ -16,11 +16,18 @@
     https://github.com/29cmb/Cooker
 ]]
 
-local Cooker = {}
-Cooker.ServerModule = require(script.Modules.ServerModule)
-Cooker.ClientModule = require(script.Modules.ClientModule)
-Cooker.Registry = require(script.Registry)
-Cooker.Remotes = require(script.Util.Remotes)
-Cooker.Types = require(script.Types)
+-- local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- if not ReplicatedStorage:FindFirstChild("CookerSharedEventBus") then
+--     local remote = Instance.new("RemoteEvent")
+--     remote.Name = "CookerSharedEventBus"
+--     remote.Parent = ReplicatedStorage
+-- end
 
-return Cooker
+return {
+    ServerModule = require(script.Modules.ServerModule),
+    ClientModule = require(script.Modules.ClientModule),
+    Registry = require(script.Registry),
+    Remotes = require(script.Util.Remotes),
+
+    EventEnvironments = require(script.Events.Environments)
+}

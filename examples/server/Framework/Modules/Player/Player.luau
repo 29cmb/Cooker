@@ -8,7 +8,7 @@ local module = Cooker.ServerModule.new({
 
 function module:Initialize()
     -- Create a remote to spawn a part at a certain position
-    -- (this is insecure don't do this in production :P)
+    -- (you should basically never do this in production)
 
     self:NewRemote(
         "Player.CreatePart[RemoteEvent]", -- The path of the remote. This one will be placed in ReplicatedStorage.Remotes.Player.CreatePart

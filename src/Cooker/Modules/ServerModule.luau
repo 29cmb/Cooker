@@ -13,6 +13,7 @@ ServerModule.Registry = require(script.Parent.Parent.Registry)
 local remotes = require(script.Parent.Parent.Util.Remotes)
 local Types = require(script.Parent.Parent.Types)
 local runService = game:GetService("RunService")
+local Environments = require(script.Parent.Parent.Events.Environments)
 
 function ServerModule.new(data: Types.ServerModuleData)
 	if runService:IsClient() then
@@ -44,4 +45,16 @@ function ServerModule.Initialize(self: Types.ServerModule)
 	warn("⚠ | ServerModule:Initialize() is not implemented for module " .. self.Name)
 end
 
-return ServerModule :: Types.ServerModule
+function ServerModule.RegisterEventListener(self: Types.ServerModule, event: string, onEvent: (...any) -> nil)
+	return Environments.ServerEvents:RegisterListener(event, onEvent, self.Name)
+end
+
+function ServerModule.UnregisterEventListener(_: Types.ServerModule, listener: Types.EventListener)
+	Environments.ServerEvents:UnregisterListener(listener)
+end
+
+function ServerModule.CallEvent(_: Types.ServerModule, event: string, ...: any)
+	Environments.ServerEvents:Call(event, ...)
+end
+
+return ServerModule :: Types.ServerModuleClass

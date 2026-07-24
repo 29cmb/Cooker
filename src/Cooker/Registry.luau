@@ -50,7 +50,7 @@ function Registry.RegisterServerModule(self: Types.Registry, module: Types.Serve
 	return output
 end
 
-function Registry.RegisterClientModule(self: Types.Registry, module: Types.ClientModule): any
+function Registry.RegisterClientModule(self: Types.Registry, module: Types.ClientModule)
 	if not runService:IsClient() then
 		warn("⚠ | Attempted to register a client module on the server")
 		return
@@ -165,7 +165,7 @@ function Registry.AwaitServerLoad(self: Types.Registry, moduleName: string)
 		return
 	end
 
-	if self.ServerModules[moduleName].Accessible == false then
+	if (self.ServerModules[moduleName] :: Types.ServerModule).Accessible == false then
 		warn("⚠ | Attempted to await server module '" .. moduleName .. "' that is not accessible")
 		return nil
 	end
@@ -199,7 +199,7 @@ function Registry.AwaitClientLoad(self: Types.Registry, moduleName: string)
 		return
 	end
 
-	if self.ClientModules[moduleName].Accessible == false then
+	if (self.ClientModules[moduleName] :: Types.ClientModule).Accessible == false then
 		warn("⚠ | Attempted to await client module '" .. moduleName .. "' that is not accessible")
 		return nil
 	end
