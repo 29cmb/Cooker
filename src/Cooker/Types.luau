@@ -1,11 +1,11 @@
-export type ServerModuleSettings = {
-	ReadOnly: boolean,
-}
-
-export type Settings = {
+export type SettingsValues = {
 	LOG_REGISTRY_CHANGES: boolean,
 	MODULE_AWAIT_TIMEOUT: number,
-	REMOTE_AWAIT_TIMEOUT: number
+	REMOTE_AWAIT_TIMEOUT: number,
+}
+
+export type Settings = SettingsValues & {
+	OverrideSettings: (self: Settings, newSettings: SettingsValues) -> nil
 }
 
 export type ServerModuleData = {

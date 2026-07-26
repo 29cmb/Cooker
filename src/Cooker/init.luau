@@ -1,4 +1,5 @@
 --!strict
+local Types = require(script.Types)
 --[[
     _________                __                 
     \_   ___ \  ____   ____ |  | __ ___________ 
@@ -22,6 +23,21 @@
 --     remote.Name = "CookerSharedEventBus"
 --     remote.Parent = ReplicatedStorage
 -- end
+
+export type Settings = Types.Settings
+export type ServerModuleData = Types.ServerModuleData
+export type ServerModule = Types.ServerModule
+export type ServerModuleClass = Types.ServerModuleClass
+export type ClientModuleData = Types.ClientModuleData
+export type ClientModule = Types.ClientModule
+export type ClientModuleClass = Types.ClientModuleClass
+export type Registry = Types.Registry
+export type AllRemotes = Types.AllRemotes
+export type RemoteReturn = Types.RemoteReturn
+export type EventEnvironmentData = Types.EventEnvironmentData
+export type EventEnvironment = Types.EventEnvironment
+export type EventEnvironmentClass = Types.EventEnvironmentClass
+export type EventListener = Types.EventListener
 
 return {
     ServerModule = require(script.Modules.ServerModule),
